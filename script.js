@@ -4,7 +4,7 @@ let editingId = null;
 let draggedId = null;
 
 const ACTION_BTN =
-    'action-btn inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl neomorphic-btn text-gray-800 text-sm font-medium cursor-pointer shrink-0';
+    'action-btn inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl neomorphic-btn text-gray-800 dark:text-gray-200 text-sm font-medium cursor-pointer shrink-0';
 
 const dropArea = document.getElementById('dropArea');
 const fileInput = document.getElementById('fileInput');
@@ -157,7 +157,7 @@ function renderGallery() {
     if (filteredImages.length === 0) {
         gallery.innerHTML = `
             <div class="col-span-full text-center py-16">
-                <p class="text-black text-xl text-center dark:text-gray-300">No images yet. Upload your first image!</p>
+                <p class="text-black dark:text-white text-xl text-center">No images yet. Upload your first image!</p>
             </div>
         `;
         return;
@@ -168,8 +168,8 @@ function renderGallery() {
             data-id="${img.id}"
         >
             <div class="mb-3">
-                <h3 class="text-gray-800 font-bold text-lg sm:text-xl leading-tight">${escapeHtml(img.title)}</h3>
-                <p class="text-gray-500 text-xs sm:text-sm mt-1 tracking-wide">${escapeHtml(img.category)}</p>
+                <h3 class="text-gray-800 dark:text-gray-200 font-bold text-lg sm:text-xl leading-tight">${escapeHtml(img.title)}</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1 tracking-wide">${escapeHtml(img.category)}</p>
             </div>
             
             <img

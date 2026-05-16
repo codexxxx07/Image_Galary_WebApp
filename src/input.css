@@ -35,7 +35,7 @@ a,
 .neomorphic-btn {
   background-color: #e0e0e0;
   box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff;
-  transition: all 0.3s ease;
+  transition: all 0.3s;
 }
 
 .neomorphic-btn:hover {
@@ -45,21 +45,9 @@ a,
 .dark .neomorphic-btn {
   background-color: #1e1e1e;
   box-shadow: 4px 4px 8px #141414, -4px -4px 8px #2a2a2a;
-  color: #e5e7eb;
+  color: #e0e0e0;
 }
 
 .dark .neomorphic-btn:hover {
   box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #2a2a2a;
-}
-
-.dark .text-gray-800 {
-  color: #e5e7eb;
-}
-
-.dark .text-gray-600 {
-  color: #9ca3af;
-}
-
-.dark .text-gray-500 {
-  color: #6b7280;
 }
