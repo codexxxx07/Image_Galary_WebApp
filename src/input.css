@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+button,
+a,
+.gallery-card {
+  transition: all 0.3s ease;
+}
+
+.neomorphic-bg {
+  background-color: #e0e0e0;
+}
+
+.dark .neomorphic-bg {
+  background-color: #1e1e1e;
+}
+
+.neomorphic-shadow {
+  box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
+}
+
+.dark .neomorphic-shadow {
+  box-shadow: 6px 6px 12px #141414, -6px -6px 12px #2a2a2a;
+}
+
+.neomorphic-shadow-inset {
+  box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+}
+
+.dark .neomorphic-shadow-inset {
+  box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #2a2a2a;
+}
+
+.neomorphic-btn {
+  background-color: #e0e0e0;
+  box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff;
+  transition: all 0.3s ease;
+}
+
+.neomorphic-btn:hover {
+  box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+}
+
+.dark .neomorphic-btn {
+  background-color: #1e1e1e;
+  box-shadow: 4px 4px 8px #141414, -4px -4px 8px #2a2a2a;
+  color: #e5e7eb;
+}
+
+.dark .neomorphic-btn:hover {
+  box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #2a2a2a;
+}
+
+.dark .text-gray-800 {
+  color: #e5e7eb;
+}
+
+.dark .text-gray-600 {
+  color: #9ca3af;
+}
+
+.dark .text-gray-500 {
+  color: #6b7280;
+}
