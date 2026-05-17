@@ -28,6 +28,12 @@ const saveEdit = document.getElementById('saveEdit');
 const cancelEdit = document.getElementById('cancelEdit');
 const uploadCTA = document.getElementById('uploadCTA');
 const uploadSection = document.getElementById('uploadSection');
+const deleteModal = document.getElementById('deleteModal');
+const deleteModalContent = document.getElementById('deleteModalContent');
+const cancelDelete = document.getElementById('cancelDelete');
+const confirmDelete = document.getElementById('confirmDelete');
+
+let deletingId = null;
 
 let previewData = null;
 
@@ -81,7 +87,43 @@ function setupEventListeners() {
     editModal.addEventListener('click', (e) => {
         if (e.target === editModal) editModal.classList.add('hidden');
     });
+    cancelDelete.addEventListener('click', closeDeleteModal);
+    confirmDelete.addEventListener('click', performDelete);
+    deleteModal.addEventListener('click', (e) => {
+        if (e.target === deleteModal) closeDeleteModal();
+    });
     gallery.addEventListener('click', handleGalleryClick);
+}
+
+function openDeleteModal(id) {
+    deletingId = id;
+    deleteModal.classList.remove('hidden');
+    deleteModal.classList.add('flex');
+    setTimeout(() => {
+        deleteModal.classList.remove('opacity-0');
+        deleteModalContent.classList.remove('scale-95');
+        deleteModalContent.classList.add('scale-100');
+    }, 10);
+}
+
+function closeDeleteModal() {
+    deleteModal.classList.add('opacity-0');
+    deleteModalContent.classList.remove('scale-100');
+    deleteModalContent.classList.add('scale-95');
+    setTimeout(() => {
+        deleteModal.classList.add('hidden');
+        deleteModal.classList.remove('flex');
+        deletingId = null;
+    }, 300);
+}
+
+function performDelete() {
+    if (deletingId !== null) {
+        images = images.filter(i => i.id !== deletingId);
+        saveToStorage();
+        renderGallery();
+        closeDeleteModal();
+    }
 }
 
 function handleFile(file) {
@@ -216,7 +258,7 @@ function handleGalleryClick(e) {
         const action = actionBtn.dataset.action;
         if (action === 'favorite') toggleFavorite(id);
         else if (action === 'edit') openEditModal(id);
-        else if (action === 'delete') deleteImage(id);
+        else if (action === 'delete') openDeleteModal(id);
         return;
     }
 

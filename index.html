@@ -135,6 +135,17 @@
         </div>
     </div>
 
+    <div id="deleteModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-gray-800/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="neomorphic-bg neomorphic-shadow rounded-3xl p-8 max-w-md w-full transition-all duration-300 transform scale-95" id="deleteModalContent">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center">Delete Item?</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-8 text-center">This action cannot be undone.</p>
+            <div class="flex gap-4">
+                <button id="cancelDelete" class="flex-1 neomorphic-btn px-6 py-3 rounded-xl text-gray-800 dark:text-gray-200 font-semibold">Cancel</button>
+                <button id="confirmDelete" class="flex-1 neomorphic-btn px-6 py-3 rounded-xl text-red-600 dark:text-red-400 font-semibold">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="w-full text-center py-4 text-black dark:text-white">
         © 2026 Krish | Built with ❤️ and Code | All Rights Reserved
     </footer>
