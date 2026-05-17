@@ -162,10 +162,12 @@ function renderGallery() {
         `;
         return;
     }
-    gallery.innerHTML = filteredImages.map(img => `
+    gallery.innerHTML = filteredImages.map((img, index) => `
         <article
-            class="gallery-card neomorphic-bg neomorphic-shadow rounded-2xl p-4 transition-all duration-300 hover:scale-[1.02]"
+            class="gallery-card neomorphic-bg neomorphic-shadow rounded-2xl p-4 transition-all duration-300 hover:scale-[1.02] cursor-grab"
             data-id="${img.id}"
+            data-index="${index}"
+            draggable="true"
         >
             <div class="mb-3">
                 <h3 class="text-gray-800 dark:text-gray-200 font-bold text-lg sm:text-xl leading-tight">${escapeHtml(img.title)}</h3>
@@ -224,54 +226,71 @@ function handleGalleryClick(e) {
     }
 }
 
-function setupGalleryDrag() {
-    gallery.querySelectorAll('.gallery-card').forEach(card => {
-        const handle = card.querySelector('.drag-handle');
+let draggedIndex = null;
+let isDragging = false;
 
-        handle.addEventListener('mousedown', () => card.setAttribute('draggable', 'true'));
-        card.addEventListener('dragend', () => {
-            card.removeAttribute('draggable');
-            card.classList.remove('opacity-60', 'ring-2', 'ring-purple-400');
-            draggedId = null;
+function setupGalleryDrag() {
+    const cards = gallery.querySelectorAll('.gallery-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            isDragging = true;
+            draggedIndex = parseInt(card.dataset.index, 10);
+            card.classList.add('opacity-50', 'scale-105', 'cursor-grabbing');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', card.dataset.id);
         });
 
-        card.addEventListener('dragstart', (e) => {
-            if (!e.target.closest('.drag-handle')) {
-                e.preventDefault();
-                return;
-            }
-            draggedId = Number(card.dataset.id);
-            card.classList.add('opacity-60', 'ring-2', 'ring-purple-400');
-            e.dataTransfer.effectAllowed = 'move';
+        card.addEventListener('dragend', () => {
+            isDragging = false;
+            cards.forEach(c => {
+                c.classList.remove('opacity-50', 'scale-105', 'cursor-grabbing', 'ring-2', 'ring-purple-400', 'ring-white/40');
+            });
+            draggedIndex = null;
         });
 
         card.addEventListener('dragover', (e) => {
             e.preventDefault();
+            if (!isDragging) return;
+            card.classList.add('ring-2', 'ring-purple-400');
             e.dataTransfer.dropEffect = 'move';
-            card.classList.add('ring-2', 'ring-white/40');
         });
 
-        card.addEventListener('dragleave', () => {
-            card.classList.remove('ring-2', 'ring-white/40');
+        card.addEventListener('dragleave', (e) => {
+            if (!e.relatedTarget?.closest('.gallery-card')) {
+                card.classList.remove('ring-2', 'ring-purple-400');
+            }
         });
 
         card.addEventListener('drop', (e) => {
             e.preventDefault();
-            card.classList.remove('ring-2', 'ring-white/40');
-            const dropId = Number(card.dataset.id);
-            if (draggedId !== null && draggedId !== dropId) {
-                reorderImages(draggedId, dropId);
+            if (!isDragging) return;
+            const dropIndex = parseInt(card.dataset.index, 10);
+            
+            if (draggedIndex !== null && dropIndex !== null && draggedIndex !== dropIndex) {
+                reorderImages(draggedIndex, dropIndex);
             }
         });
     });
 }
 
-function reorderImages(fromId, toId) {
-    const fromIndex = images.findIndex(i => i.id === fromId);
-    const toIndex = images.findIndex(i => i.id === toId);
-    if (fromIndex === -1 || toIndex === -1) return;
-    const [item] = images.splice(fromIndex, 1);
-    images.splice(toIndex, 0, item);
+function reorderImages(fromFilteredIndex, toFilteredIndex) {
+    let filteredImages = images;
+    if (currentFilter !== 'All') {
+        filteredImages = images.filter(img => img.category === currentFilter);
+    }
+    
+    const fromId = filteredImages[fromFilteredIndex].id;
+    const toId = filteredImages[toFilteredIndex].id;
+    
+    const fromFullIndex = images.findIndex(i => i.id === fromId);
+    const toFullIndex = images.findIndex(i => i.id === toId);
+    
+    if (fromFullIndex === -1 || toFullIndex === -1) return;
+    
+    const [item] = images.splice(fromFullIndex, 1);
+    images.splice(toFullIndex, 0, item);
+    
     saveToStorage();
     renderGallery();
 }
