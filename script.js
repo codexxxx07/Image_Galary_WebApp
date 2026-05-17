@@ -32,6 +32,9 @@ const deleteModal = document.getElementById('deleteModal');
 const deleteModalContent = document.getElementById('deleteModalContent');
 const cancelDelete = document.getElementById('cancelDelete');
 const confirmDelete = document.getElementById('confirmDelete');
+const validationModal = document.getElementById('validationModal');
+const validationModalContent = document.getElementById('validationModalContent');
+const closeValidationModal = document.getElementById('closeValidationModal');
 
 let deletingId = null;
 
@@ -92,7 +95,31 @@ function setupEventListeners() {
     deleteModal.addEventListener('click', (e) => {
         if (e.target === deleteModal) closeDeleteModal();
     });
+    closeValidationModal.addEventListener('click', closeValidationModalFn);
+    validationModal.addEventListener('click', (e) => {
+        if (e.target === validationModal) closeValidationModalFn();
+    });
     gallery.addEventListener('click', handleGalleryClick);
+}
+
+function openValidationModal() {
+    validationModal.classList.remove('hidden');
+    validationModal.classList.add('flex');
+    setTimeout(() => {
+        validationModal.classList.remove('opacity-0');
+        validationModalContent.classList.remove('scale-95');
+        validationModalContent.classList.add('scale-100');
+    }, 10);
+}
+
+function closeValidationModalFn() {
+    validationModal.classList.add('opacity-0');
+    validationModalContent.classList.remove('scale-100');
+    validationModalContent.classList.add('scale-95');
+    setTimeout(() => {
+        validationModal.classList.add('hidden');
+        validationModal.classList.remove('flex');
+    }, 300);
 }
 
 function openDeleteModal(id) {
@@ -146,7 +173,7 @@ function handleFile(file) {
 
 function handleSubmit() {
     if (!previewData) {
-        alert('Please select an image.');
+        openValidationModal();
         return;
     }
     if (!imageTitle.value.trim()) {
