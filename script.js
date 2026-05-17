@@ -3,6 +3,11 @@ let currentFilter = 'All';
 let editingId = null;
 let draggedId = null;
 
+let customCategories = [];
+let isAddingCategory = false;
+let categoryInputValue = '';
+const defaultCategories = ['All', 'Nature', 'Personal', 'Work'];
+
 const ACTION_BTN =
     'action-btn inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl neomorphic-btn text-gray-800 dark:text-gray-200 text-sm font-medium cursor-pointer shrink-0';
 
@@ -20,7 +25,7 @@ const closeModal = document.getElementById('closeModal');
 const darkModeToggle = document.getElementById('darkModeToggle');
 const sunIcon = document.getElementById('sunIcon');
 const moonIcon = document.getElementById('moonIcon');
-const filterBtns = document.querySelectorAll('.filter-btn');
+const filterContainer = document.getElementById('filterContainer');
 const editModal = document.getElementById('editModal');
 const editTitle = document.getElementById('editTitle');
 const editCategory = document.getElementById('editCategory');
@@ -43,8 +48,139 @@ let previewData = null;
 function init() {
     loadFromStorage();
     loadDarkMode();
+    renderCategories();
+    updateCategoryDropdowns();
     renderGallery();
     setupEventListeners();
+}
+
+function loadFromStorage() {
+    const storedImages = localStorage.getItem('galleryImages');
+    if (storedImages) {
+        images = JSON.parse(storedImages);
+    }
+    const storedCategories = localStorage.getItem('customCategories');
+    if (storedCategories) {
+        customCategories = JSON.parse(storedCategories);
+    }
+}
+
+function saveToStorage() {
+    localStorage.setItem('galleryImages', JSON.stringify(images));
+    localStorage.setItem('customCategories', JSON.stringify(customCategories));
+}
+
+function renderCategories() {
+    filterContainer.innerHTML = '';
+    
+    defaultCategories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = `filter-btn neomorphic-btn px-6 py-2 rounded-full text-gray-800 dark:text-gray-200 ${currentFilter === cat ? 'active' : ''}`;
+        btn.dataset.filter = cat;
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+            currentFilter = cat;
+            renderCategories();
+            renderGallery();
+        });
+        filterContainer.appendChild(btn);
+    });
+    
+    customCategories.forEach(cat => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-center gap-1';
+        
+        const btn = document.createElement('button');
+        btn.className = `filter-btn neomorphic-btn px-6 py-2 rounded-full text-gray-800 dark:text-gray-200 ${currentFilter === cat.name ? 'active' : ''}`;
+        btn.dataset.filter = cat.name;
+        btn.textContent = cat.name;
+        btn.addEventListener('click', () => {
+            currentFilter = cat.name;
+            renderCategories();
+            renderGallery();
+        });
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'neomorphic-btn w-6 h-6 rounded-full text-gray-800 dark:text-gray-200 text-sm flex items-center justify-center';
+        deleteBtn.innerHTML = '❌';
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteCategory(cat.id);
+        });
+        
+        wrapper.appendChild(btn);
+        wrapper.appendChild(deleteBtn);
+        filterContainer.appendChild(wrapper);
+    });
+    
+    if (isAddingCategory) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'categoryInput';
+        input.placeholder = 'Enter custom category name';
+        input.className = 'neomorphic-bg neomorphic-shadow-inset px-4 py-2 rounded-full text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none';
+        input.value = categoryInputValue;
+        input.addEventListener('input', (e) => {
+            categoryInputValue = e.target.value;
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                addCategory();
+            }
+        });
+        input.addEventListener('blur', () => {
+            addCategory();
+        });
+        filterContainer.appendChild(input);
+        setTimeout(() => input.focus(), 0);
+    } else {
+        const addBtn = document.createElement('button');
+        addBtn.id = 'addCategoryBtn';
+        addBtn.className = 'filter-btn neomorphic-btn px-6 py-2 rounded-full text-gray-800 dark:text-gray-200';
+        addBtn.textContent = customCategories.length === 0 ? 'Other' : '+ Add';
+        addBtn.addEventListener('click', () => {
+            isAddingCategory = true;
+            categoryInputValue = '';
+            renderCategories();
+        });
+        filterContainer.appendChild(addBtn);
+    }
+}
+
+function addCategory() {
+    const name = categoryInputValue.trim();
+    if (name) {
+        const allCategories = [...defaultCategories, ...customCategories.map(c => c.name)];
+        if (!allCategories.includes(name)) {
+            customCategories.push({ id: Date.now(), name });
+            saveToStorage();
+            updateCategoryDropdowns();
+            imageCategory.value = name;
+            editCategory.value = name;
+        }
+    }
+    isAddingCategory = false;
+    categoryInputValue = '';
+    renderCategories();
+}
+
+function deleteCategory(id) {
+    customCategories = customCategories.filter(c => c.id !== id);
+    saveToStorage();
+    updateCategoryDropdowns();
+    if (currentFilter !== 'All' && !defaultCategories.includes(currentFilter) && !customCategories.find(c => c.name === currentFilter)) {
+        currentFilter = 'All';
+        renderGallery();
+    }
+    renderCategories();
+}
+
+function updateCategoryDropdowns() {
+    const customNames = customCategories.map(c => c.name);
+    const allCategories = ['Nature', 'Personal', 'Work', ...customNames, 'Other'];
+    
+    imageCategory.innerHTML = allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+    editCategory.innerHTML = allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
 
 function setupEventListeners() {
@@ -74,14 +210,6 @@ function setupEventListeners() {
         if (e.target === modal) modal.classList.add('hidden');
     });
     darkModeToggle.addEventListener('click', toggleDarkMode);
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active', 'bg-white/20'));
-            btn.classList.add('active', 'bg-white/20');
-            currentFilter = btn.dataset.filter;
-            renderGallery();
-        });
-    });
     uploadCTA.addEventListener('click', () => {
         uploadSection.scrollIntoView({ behavior: 'smooth' });
     });
@@ -100,6 +228,22 @@ function setupEventListeners() {
         if (e.target === validationModal) closeValidationModalFn();
     });
     gallery.addEventListener('click', handleGalleryClick);
+    
+    imageCategory.addEventListener('change', () => {
+        if (imageCategory.value === 'Other') {
+            isAddingCategory = true;
+            categoryInputValue = '';
+            renderCategories();
+        }
+    });
+    
+    editCategory.addEventListener('change', () => {
+        if (editCategory.value === 'Other') {
+            isAddingCategory = true;
+            categoryInputValue = '';
+            renderCategories();
+        }
+    });
 }
 
 function openValidationModal() {
@@ -199,17 +343,6 @@ function resetForm() {
     previewContainer.classList.add('hidden');
     imageTitle.value = '';
     fileInput.value = '';
-}
-
-function saveToStorage() {
-    localStorage.setItem('galleryImages', JSON.stringify(images));
-}
-
-function loadFromStorage() {
-    const stored = localStorage.getItem('galleryImages');
-    if (stored) {
-        images = JSON.parse(stored);
-    }
 }
 
 function escapeHtml(text) {
