@@ -92,7 +92,7 @@ function renderCategories() {
         
         const btn = document.createElement('button');
         btn.className = `filter-btn neomorphic-btn px-6 py-2 rounded-full text-gray-800 dark:text-gray-200 ${currentFilter === cat.name ? 'active' : ''}`;
-        btn.dataset.filter = cat.name;
+        btn.dataset.filter = escapeHtml(cat.name);
         btn.textContent = cat.name;
         btn.addEventListener('click', () => {
             currentFilter = cat.name;
@@ -179,8 +179,8 @@ function updateCategoryDropdowns() {
     const customNames = customCategories.map(c => c.name);
     const allCategories = ['Nature', 'Personal', 'Work', ...customNames, 'Other'];
     
-    imageCategory.innerHTML = allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-    editCategory.innerHTML = allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+    imageCategory.innerHTML = allCategories.map(cat => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join('');
+    editCategory.innerHTML = allCategories.map(cat => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join('');
 }
 
 function setupEventListeners() {
@@ -550,9 +550,14 @@ function toggleDarkMode() {
 }
 
 function loadDarkMode() {
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('darkMode', 'false');
-    updateDarkModeIcons(false);
+    const saved = localStorage.getItem('darkMode');
+    const isDark = saved === 'true';
+    if (isDark) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+    updateDarkModeIcons(isDark);
 }
 
 function updateDarkModeIcons(isDark) {
