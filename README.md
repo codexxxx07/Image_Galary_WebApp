@@ -178,13 +178,13 @@ Image_Galary_App/
 ## 📸 Screenshots
 
 ### Main Gallery View
-![Gallery View](https://via.placeholder.com/800x400?text=Gallery+View+Placeholder)
+![Gallery View](/assets/Img2.png)
 
 ### Upload Section
-![Upload Section](https://via.placeholder.com/800x400?text=Upload+Section+Placeholder)
+![Upload Section](/assets/Img1.png)
 
 ### Dark Mode
-![Dark Mode](https://via.placeholder.com/800x400?text=Dark+Mode+Placeholder)
+![Dark Mode](/assets/Img3.png)
 
 ---
 
