@@ -207,7 +207,7 @@ Image_Galary_App/
 
 ## 👨‍💻 Author
 
-**Krishanjit Chakraborty**
+**Krish**
 
 - [GitHub](https://github.com/codexxxx07)
 - [LinkedIn](https://www.linkedin.com/in/krishanjit-chakraborty-258a5237a)
